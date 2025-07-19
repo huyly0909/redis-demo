@@ -2,12 +2,12 @@
 #### Demo Redis Queue:
 - producer: send messages to the task queue (files, str, dict, etc.)
 - worker: receive messages from the queue and process them, send the result to result queue
-  - retry on failure
-  - 
   - queues:
-    - job_queue
-    - processing_queue
-    - result_queue
+    - task_queue
+    - task_processing_queue
+    - task_result_queue
+  - retry on failure
+  - reaper: clean up old tasks in the task queue (only need 1 reaper)
 - consumer: consume results from the result queue, print them, and save to file
 
 # Installations
