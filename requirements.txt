@@ -1,3 +1,7 @@
 loguru
 redis
 pydantic
+psutil
+flask
+flask-cors
+aioredis

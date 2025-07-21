@@ -208,3 +208,9 @@ __marimo__/
 
 # Pycharm
 .idea/
+
+# VSCode
+.vscode/
+.history/
+*data/
+results/

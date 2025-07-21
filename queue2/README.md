@@ -12,9 +12,7 @@
 
 # Installations
 - python3.12
-- redis
-- pydantic
-- loguru
+- install requirements.txt
 
 # Usage
 - Start Redis, worker.py, consumer.py

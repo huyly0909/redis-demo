@@ -1,0 +1,22 @@
+version: '3.8'
+
+services:
+  redis-demo-worker-1:
+    build:
+      context: .
+      dockerfile: Dockerfile.worker
+    image: redis-demo-worker:latest  # Tag the built image
+    container_name: redis-demo-worker-1
+    environment:
+      - REDIS_HOST=host.docker.internal
+      - ENABLE_REAPER=true
+      - WORKER_NAME=worker-1
+
+  redis-demo-worker-2:
+    image: redis-demo-worker:latest  # Reuse the same image
+    container_name: redis-demo-worker-2
+    depends_on:
+      - redis-demo-worker-1  # Ensure worker-1 builds first
+    environment:
+      - REDIS_HOST=host.docker.internal
+      - WORKER_NAME=worker-2

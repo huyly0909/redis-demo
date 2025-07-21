@@ -1,0 +1,15 @@
+version: '3.8'
+
+services:
+  redis-demo-server:
+    build:
+      context: .
+      dockerfile: Dockerfile.server
+    container_name: redis-demo-server
+    ports:
+      - "5555:5000"
+    volumes:
+      - ./results:/app/results
+      - ./health_data:/app/health_data
+    environment:
+      - REDIS_HOST=host.docker.internal
