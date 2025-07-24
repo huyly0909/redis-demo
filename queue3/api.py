@@ -240,28 +240,22 @@ async def _async_consume_health_checks():
         await async_redis.ping()
         logger.info("[HEALTH-CONSUMER] Redis connection established")
         logger.debug("[HEALTH-CONSUMER] Waiting for health check data...")
-        while True:
-            try:
-                # Block and wait for health check data
-                result = await async_redis.brpop([RedisQueue.WORKER_HEALTH_CHECK])
-                if result:
-                    _, health_data_json = result
-                    health_data = json.loads(health_data_json)
-                    
-                    worker_name = health_data.get("worker_name", "unknown")
-                    health_file = HEALTH_DATA_DIR / f"{worker_name}.json"
-                    
-                    # Write to file
-                    with open(health_file, 'w') as f:
-                        json.dump(health_data, f, indent=2)
-                        
-                    logger.info(f"[HEALTH-CONSUMER] Updated health data for {worker_name}")
-                else:
-                    logger.debug("[HEALTH-CONSUMER] No health data received (timeout)")
-                    
-            except Exception as e:
-                logger.error(f"[HEALTH-CONSUMER] Error consuming health checks: {e}")
-                await asyncio.sleep(1)
+        ps = async_redis.pubsub()
+        await ps.subscribe(RedisQueue.WORKER_HEALTH_CHECK)
+        async for msg in ps.listen():
+            print(f"[API] got {RedisQueue.WORKER_HEALTH_CHECK}:", msg)
+            if msg["type"] == "message":
+                health_data_json = msg["data"]
+                health_data = json.loads(health_data_json)
+
+                worker_name = health_data.get("worker_name", "unknown")
+                health_file = HEALTH_DATA_DIR / f"{worker_name}.json"
+
+                # Write to file
+                with open(health_file, 'w') as f:
+                    json.dump(health_data, f, indent=2)
+
+                logger.info(f"[HEALTH-CONSUMER] Updated health data for {worker_name}")
     except Exception as e:
         logger.error(f"[HEALTH-CONSUMER] Fatal error in health consumer: {e}")
     finally:

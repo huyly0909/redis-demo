@@ -105,7 +105,7 @@ async def send_health_check(r: aioredis.Redis, worker_name: str):
             processing_tasks=list(PROCESSING_TASKS),
             **metrics
         )
-        await r.rpush(RedisQueue.WORKER_HEALTH_CHECK, health.model_dump_json())
+        await r.publish(RedisQueue.WORKER_HEALTH_CHECK, health.model_dump_json())
     except Exception as e:
         logger.error(f"[{worker_name}] Health check failed: {e}")
 
